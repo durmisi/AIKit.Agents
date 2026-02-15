@@ -1,4 +1,5 @@
 using AIKit.Clients.AzureOpenAI;
+using Microsoft.Agents.AI;
 
 namespace AIKit.Agents.Sample;
 
@@ -44,7 +45,7 @@ public static class ChatUseCase
                 .WithToolsFromAssembly(typeof(SampleTools).Assembly)
                 .Build();
 
-            // Interactive chat loop
+            // Interactive chat loop with session support
             Console.WriteLine("Chat with the AI assistant! Type 'exit' to quit.");
             Console.WriteLine("Try asking things like:");
             Console.WriteLine("- Calculate 15 * 23 + 7");
@@ -52,6 +53,9 @@ public static class ChatUseCase
             Console.WriteLine("- Analyze the sentiment of: I love this product!");
             Console.WriteLine("- Convert 'Hello World' to uppercase");
             Console.WriteLine();
+
+            var session = await agent.CreateSessionAsync(); // Maintain conversation context
+            var options = new AgentRunOptions(); // Default options
 
             while (true)
             {
@@ -64,8 +68,8 @@ public static class ChatUseCase
                 try
                 {
                     Console.Write("Assistant: ");
-                    var response = await agent.RunAsync(input);
-                    Console.WriteLine(response);
+                    var response = await agent.RunWithOptionsAsync(input, session, options);
+                    Console.WriteLine(response.Text);
                 }
                 catch (Exception ex)
                 {
