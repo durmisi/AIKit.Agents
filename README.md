@@ -45,12 +45,6 @@ Console.WriteLine(response.Text);
 - .NET 10.0+
 - Microsoft Agent Framework packages (included as dependencies)
 
-## Documentation
-
-- [Software Requirements Specification](docs/SRS.md)
-- [Development Plan](docs/Plan.md)
-- [Developer Guide](docs/DeveloperGuide.md) (planned)
-
 ## Samples
 
 See [src/AIKit.Agents.Sample/](src/AIKit.Agents.Sample/) for complete examples including chat agents and workflow pipelines.
