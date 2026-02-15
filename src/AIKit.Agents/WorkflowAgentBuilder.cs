@@ -114,7 +114,9 @@ public class WorkflowAgentBuilder
 
     private class InternalWorkflowExecutor : Executor
     {
-        public InternalWorkflowExecutor() : base("InternalWorkflowExecutor", null, false) { }
+        public InternalWorkflowExecutor() : base("InternalWorkflowExecutor", null, false)
+        {
+        }
 
         protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
         {
@@ -123,4 +125,3 @@ public class WorkflowAgentBuilder
         }
     }
 }
-

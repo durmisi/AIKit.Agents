@@ -1,7 +1,7 @@
-using System.ComponentModel;
-using System.Reflection;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace AIKit.Agents;
 
@@ -76,4 +76,3 @@ public static class ToolDiscovery
         return tools;
     }
 }
-

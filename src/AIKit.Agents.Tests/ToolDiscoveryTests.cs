@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using AIKit.Agents;
 
 namespace AIKit.Agents.Tests;
 
@@ -35,5 +34,3 @@ public class ToolDiscoveryTests
     [Description("A sample tool method.")]
     public static string SampleTool(string input) => $"Processed {input}";
 }
-
-

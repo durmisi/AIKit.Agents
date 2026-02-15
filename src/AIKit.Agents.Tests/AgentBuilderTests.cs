@@ -1,8 +1,6 @@
-using System.ComponentModel;
-using AIKit.Agents;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace AIKit.Agents.Tests;
 
@@ -183,7 +181,8 @@ public class AgentBuilderTests
 
         public object? GetService(Type serviceType, object? serviceKey = null) => null;
 
-        public void Dispose() { }
+        public void Dispose()
+        { }
     }
 
     private class MockServiceProvider : IServiceProvider
@@ -193,15 +192,22 @@ public class AgentBuilderTests
 
     private class MockLoggerFactory : ILoggerFactory
     {
-        public void Dispose() { }
+        public void Dispose()
+        { }
+
         public ILogger CreateLogger(string categoryName) => new MockLogger();
-        public void AddProvider(ILoggerProvider provider) { }
+
+        public void AddProvider(ILoggerProvider provider)
+        { }
     }
 
     private class MockLogger : ILogger
     {
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
         public bool IsEnabled(LogLevel logLevel) => false;
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) { }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        { }
     }
-    }
+}

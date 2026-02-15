@@ -18,9 +18,11 @@ public class Program
             case "1":
                 await ChatUseCase.RunAsync();
                 break;
+
             case "2":
                 await WorkflowUseCase.RunAsync();
                 break;
+
             case "3":
                 await ChatUseCase.RunAsync();
                 Console.WriteLine();
@@ -28,6 +30,7 @@ public class Program
                 Console.ReadLine();
                 await WorkflowUseCase.RunAsync();
                 break;
+
             default:
                 Console.WriteLine("Invalid choice. Running both use cases...");
                 await ChatUseCase.RunAsync();
@@ -43,5 +46,3 @@ public class Program
         Console.ReadKey();
     }
 }
-
-

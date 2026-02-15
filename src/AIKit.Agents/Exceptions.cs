@@ -5,7 +5,9 @@ namespace AIKit.Agents;
 /// </summary>
 public class MissingModelException : Exception
 {
-    public MissingModelException(string message) : base(message) { }
+    public MissingModelException(string message) : base(message)
+    {
+    }
 }
 
 /// <summary>
@@ -13,7 +15,9 @@ public class MissingModelException : Exception
 /// </summary>
 public class ToolInstantiationException : Exception
 {
-    public ToolInstantiationException(string message) : base(message) { }
+    public ToolInstantiationException(string message) : base(message)
+    {
+    }
 }
 
 /// <summary>
@@ -21,6 +25,7 @@ public class ToolInstantiationException : Exception
 /// </summary>
 public class AssemblyScanException : Exception
 {
-    public AssemblyScanException(string message) : base(message) { }
+    public AssemblyScanException(string message) : base(message)
+    {
+    }
 }
-

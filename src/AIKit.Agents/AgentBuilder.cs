@@ -1,7 +1,7 @@
-using System.Reflection;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace AIKit.Agents;
 
@@ -18,6 +18,9 @@ public class AgentBuilder
     private IServiceProvider? _serviceProvider;
     private List<AITool> _addedTools = [];
     private ILoggerFactory? _loggerFactory;
+    private bool _enableOpenTelemetry = false;
+    private string _openTelemetrySourceName = "AIKit.Agents";
+    private bool _openTelemetryEnableSensitiveData = false;
 
     /// <summary>
     /// Sets the chat client to use for the agent.
@@ -118,6 +121,20 @@ public class AgentBuilder
     }
 
     /// <summary>
+    /// Enables OpenTelemetry observability for the agent.
+    /// </summary>
+    /// <param name="sourceName">The source name for telemetry.</param>
+    /// <param name="enableSensitiveData">Whether to enable sensitive data in telemetry.</param>
+    /// <returns>The builder instance.</returns>
+    public AgentBuilder WithOpenTelemetry(string sourceName = "AIKit.Agents", bool enableSensitiveData = false)
+    {
+        _enableOpenTelemetry = true;
+        _openTelemetrySourceName = sourceName;
+        _openTelemetryEnableSensitiveData = enableSensitiveData;
+        return this;
+    }
+
+    /// <summary>
     /// Builds the chat agent.
     /// </summary>
     /// <returns>The MAF AIAgent instance.</returns>
@@ -128,13 +145,42 @@ public class AgentBuilder
         var discoveredTools = ToolDiscovery.DiscoverTools(_assemblies, _serviceProvider);
         var allTools = discoveredTools.Concat(_addedTools).ToList();
 
-        return _chatClient.AsAIAgent(
+        // Apply chat middleware if set
+        var chatClient = _chatClient;
+
+        // Apply OpenTelemetry to chat client
+        if (_enableOpenTelemetry)
+        {
+            chatClient = chatClient.AsBuilder()
+            .UseFunctionInvocation()
+            .UseOpenTelemetry(
+                sourceName: _openTelemetrySourceName,
+                configure: cfg =>
+                {
+                    cfg.EnableSensitiveData = _openTelemetryEnableSensitiveData;
+                }).Build();
+        }
+
+        var agent = chatClient.AsAIAgent(
             instructions: _systemMessage,
             name: _name ?? "ChatAgent",
             description: _description ?? "Chat agent created with AIKit.Agents.AgentBuilder",
             tools: allTools,
             loggerFactory: _loggerFactory,
             services: _serviceProvider);
+
+        // Apply OpenTelemetry
+        if (_enableOpenTelemetry)
+        {
+            agent = (ChatClientAgent)agent.AsBuilder()
+            .UseOpenTelemetry(
+                sourceName: _openTelemetrySourceName,
+                configure: cfg =>
+                {
+                    cfg.EnableSensitiveData = _openTelemetryEnableSensitiveData;
+                }).Build();
+        }
+
+        return agent;
     }
 }
-

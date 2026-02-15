@@ -1,6 +1,3 @@
-using AIKit.Agents;
-using AIKit.Agents.Sample;
-
 namespace AIKit.Agents.Sample;
 
 /// <summary>

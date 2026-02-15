@@ -61,14 +61,6 @@ Language: C# (.NET 10)
 - Configure services
 - Build native MAF agent
 
-Required Methods:
-
-- WithModel(string modelName)
-- WithSystemMessage(string systemMessage)
-- WithToolsFromAssembly(params Assembly[]? assemblies)
-- WithServiceProvider(IServiceProvider provider)
-- Build() -> returns native MAF agent
-
 5. Tool Discovery Requirements
    5.1 ToolDiscovery Component
 
@@ -140,21 +132,13 @@ Required Methods:
 - UI integration
 - Multi-model routing
 
-13. Phase 1 Deliverables
+16. Unit tests for tool scanning, multiple assemblies, DI tool instantiation
 
-14. Core builder implementation
+17. Sample project
 
-15. ToolDiscovery component
+18. README documentation
 
-16. Basic WorkflowAgentBuilder
-
-17. Unit tests for tool scanning, multiple assemblies, DI tool instantiation
-
-18. Sample project
-
-19. README documentation
-
-20. Strategic Positioning
+19. Strategic Positioning
     AIKit.Agents is positioned as:
     "The Fluent Builder Layer for Microsoft Agent Framework"
     Not a competitor. Not a replac

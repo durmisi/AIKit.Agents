@@ -1,6 +1,5 @@
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
-using System.Text.Json;
 
 namespace AIKit.Agents.Sample;
 
@@ -14,7 +13,9 @@ public class DocumentProcessingWorkflow
     /// </summary>
     public class DocumentValidator : Executor
     {
-        public DocumentValidator() : base("DocumentValidator", null, false) { }
+        public DocumentValidator() : base("DocumentValidator", null, false)
+        {
+        }
 
         protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
         {
@@ -51,7 +52,9 @@ public class DocumentProcessingWorkflow
     /// </summary>
     public class ContentAnalyzer : Executor
     {
-        public ContentAnalyzer() : base("ContentAnalyzer", null, false) { }
+        public ContentAnalyzer() : base("ContentAnalyzer", null, false)
+        {
+        }
 
         protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
         {
@@ -94,7 +97,9 @@ public class DocumentProcessingWorkflow
     /// </summary>
     public class SummaryGenerator : Executor
     {
-        public SummaryGenerator() : base("SummaryGenerator", null, false) { }
+        public SummaryGenerator() : base("SummaryGenerator", null, false)
+        {
+        }
 
         protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
         {

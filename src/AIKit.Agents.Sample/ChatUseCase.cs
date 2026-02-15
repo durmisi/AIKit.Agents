@@ -1,4 +1,3 @@
-using AIKit.Agents;
 using AIKit.Clients.AzureOpenAI;
 
 namespace AIKit.Agents.Sample;
