@@ -2,7 +2,7 @@ AIKit.Agents
 Phase 1 – Requirements Specification
 Version: 0.1
 Target Framework: Microsoft Agent Framework (MAF)
-Language: C# (.NET 8+)
+Language: C# (.NET 10)
 
 1. Purpose
    AIKit.Agents is a lightweight developer-experience layer built on top of Microsoft Agent Framework.
@@ -128,22 +128,6 @@ Required Methods:
 
 - Must compile against .NET 8+
 - Must track latest stable MAF version
-
-10. Public API Surface (Phase 1)
-    public static class AiKitAgentBuilder
-    {
-    public static ChatAgentBuilder CreateChatAgent();
-    public static WorkflowAgentBuilder CreateWorkflowAgent();
-    }
-
-public class ChatAgentBuilder
-{
-ChatAgentBuilder WithModel(string modelName);
-ChatAgentBuilder WithSystemMessage(string message);
-ChatAgentBuilder WithServiceProvider(IServiceProvider provider);
-ChatAgentBuilder WithToolsFromAssembly(params Assembly[]? assemblies);
-object Build(); // Native MAF agent
-}
 
 11. Developer Experience Goals
 
