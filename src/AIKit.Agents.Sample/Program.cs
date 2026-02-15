@@ -1,68 +1,46 @@
-﻿using System.ComponentModel;
-using AIKit.Agents;
-using AIKit.Clients.AzureOpenAI;
-
-// Sample tool class
-public class WeatherTools
-{
-    [Description("Get the weather for a given location.")]
-    public static string GetWeather([Description("The location to get the weather for.")] string location)
-    {
-        return $"The weather in {location} is sunny.";
-    }
-}
+﻿using AIKit.Agents.Sample;
 
 public class Program
 {
-    public static async Task Main()
+    public static async Task Main(string[] args)
     {
-        // Example of creating a chat agent with tools using AIKit
-        var chatClient = new ChatClientBuilder()
-            .WithEndpoint("https://your-endpoint.openai.azure.com/")
-            .WithModel("gpt-4o-mini")
-            .WithDefaultAzureCredential()
-            .Build();
+        Console.WriteLine("AIKit.Agents Sample Application");
+        Console.WriteLine("Choose a use case to run:");
+        Console.WriteLine("1. Chat Agent - Interactive AI Assistant");
+        Console.WriteLine("2. Workflow Agent - Document Processing Pipeline");
+        Console.WriteLine("3. Run Both (Sequential)");
+        Console.Write("Enter your choice (1-3): ");
 
-        var builder = AiKitAgentBuilder.CreateChatAgent()
-            .WithChatClient(chatClient)
-            .WithSystemMessage("You are a helpful assistant.")
-            .WithToolsFromAssembly(typeof(WeatherTools).Assembly);
+        var choice = Console.ReadLine()?.Trim();
 
-        var agent = builder.Build();
-        var response = await agent.RunAsync("What's the weather in Paris?");
-
-        Console.WriteLine($"Agent response: {response}");
-
-        Console.WriteLine("AIKit.Agents sample: Agent builder created successfully using AIKit.");
-
-        // Example of flexible workflow agent with custom executors and edges
-        var customExecutor1 = new CustomExecutor("Executor1");
-        var customExecutor2 = new CustomExecutor("Executor2");
-
-        var workflowBuilder = AiKitAgentBuilder.CreateWorkflowAgent()
-            .WithName("SampleWorkflow")
-            .WithDescription("A sample workflow with multiple executors")
-            .WithExecutor(customExecutor1)
-            .WithExecutor(customExecutor2)
-            .AddEdge(customExecutor1, customExecutor2);
-
-        var workflow = workflowBuilder.Build();
-
-        Console.WriteLine("Flexible workflow created successfully with custom executors and edges.");
-
-        Console.WriteLine("Workflow builder created.");
-    }
-
-    // Custom executor for demonstration
-    public class CustomExecutor : Microsoft.Agents.AI.Workflows.Executor
-    {
-        public CustomExecutor(string id) : base(id, null, false) { }
-
-        protected override Microsoft.Agents.AI.Workflows.RouteBuilder ConfigureRoutes(Microsoft.Agents.AI.Workflows.RouteBuilder routeBuilder)
+        switch (choice)
         {
-            routeBuilder.AddHandler<object>((input, context) => ValueTask.CompletedTask);
-            return routeBuilder;
+            case "1":
+                await ChatUseCase.RunAsync();
+                break;
+            case "2":
+                await WorkflowUseCase.RunAsync();
+                break;
+            case "3":
+                await ChatUseCase.RunAsync();
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue to workflow demo...");
+                Console.ReadLine();
+                await WorkflowUseCase.RunAsync();
+                break;
+            default:
+                Console.WriteLine("Invalid choice. Running both use cases...");
+                await ChatUseCase.RunAsync();
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue to workflow demo...");
+                Console.ReadLine();
+                await WorkflowUseCase.RunAsync();
+                break;
         }
+
+        Console.WriteLine();
+        Console.WriteLine("Sample application completed. Press any key to exit...");
+        Console.ReadKey();
     }
 }
 
