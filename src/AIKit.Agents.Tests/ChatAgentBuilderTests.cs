@@ -1,0 +1,158 @@
+using System.ComponentModel;
+using AIKit.Agents;
+using Microsoft.Extensions.AI;
+using System.Collections.Generic;
+
+namespace AIKit.Agents.Tests;
+
+public class ChatAgentBuilderTests
+{
+    [Fact]
+    public void WithChatClient_SetsChatClient()
+    {
+        // Arrange
+        var chatClient = new MockChatClient();
+
+        // Act
+        var agent = AiKitAgentBuilder.CreateChatAgent()
+            .WithChatClient(chatClient)
+            .Build();
+
+        // Assert
+        Assert.NotNull(agent);
+    }
+
+    [Fact]
+    public void WithSystemMessage_SetsSystemMessage()
+    {
+        // Arrange
+        var chatClient = new MockChatClient();
+
+        // Act
+        var agent = AiKitAgentBuilder.CreateChatAgent()
+            .WithChatClient(chatClient)
+            .WithSystemMessage("Test system message")
+            .Build();
+
+        // Assert
+        Assert.NotNull(agent);
+    }
+
+    [Fact]
+    public void WithName_SetsName()
+    {
+        // Arrange
+        var chatClient = new MockChatClient();
+
+        // Act
+        var agent = AiKitAgentBuilder.CreateChatAgent()
+            .WithChatClient(chatClient)
+            .WithName("TestAgent")
+            .Build();
+
+        // Assert
+        Assert.NotNull(agent);
+    }
+
+    [Fact]
+    public void WithDescription_SetsDescription()
+    {
+        // Arrange
+        var chatClient = new MockChatClient();
+
+        // Act
+        var agent = AiKitAgentBuilder.CreateChatAgent()
+            .WithChatClient(chatClient)
+            .WithDescription("Test description")
+            .Build();
+
+        // Assert
+        Assert.NotNull(agent);
+    }
+
+    [Fact]
+    public void WithToolsFromAssembly_SetsAssemblies()
+    {
+        // Arrange
+        var chatClient = new MockChatClient();
+        var assembly = typeof(ChatAgentBuilderTests).Assembly;
+
+        // Act
+        var agent = AiKitAgentBuilder.CreateChatAgent()
+            .WithChatClient(chatClient)
+            .WithToolsFromAssembly(assembly)
+            .Build();
+
+        // Assert
+        Assert.NotNull(agent);
+    }
+
+    [Fact]
+    public void WithToolsFromCurrentAssembly_SetsCurrentAssembly()
+    {
+        // Arrange
+        var chatClient = new MockChatClient();
+
+        // Act
+        var agent = AiKitAgentBuilder.CreateChatAgent()
+            .WithChatClient(chatClient)
+            .WithToolsFromCurrentAssembly()
+            .Build();
+
+        // Assert
+        Assert.NotNull(agent);
+    }
+
+    [Fact]
+    public void WithServiceProvider_SetsServiceProvider()
+    {
+        // Arrange
+        var chatClient = new MockChatClient();
+        var services = new MockServiceProvider();
+
+        // Act
+        var agent = AiKitAgentBuilder.CreateChatAgent()
+            .WithChatClient(chatClient)
+            .WithServiceProvider(services)
+            .Build();
+
+        // Assert
+        Assert.NotNull(agent);
+    }
+
+    [Fact]
+    public void Build_WithoutChatClient_ThrowsMissingModelException()
+    {
+        // Act & Assert
+        Assert.Throws<MissingModelException>(() =>
+            AiKitAgentBuilder.CreateChatAgent()
+                .Build());
+    }
+
+    [Description("A test tool.")]
+    public static string TestTool(string input) => input;
+
+    private class MockChatClient : IChatClient
+    {
+        public ChatClientMetadata Metadata => new("Mock", null);
+
+        public Task<ChatResponse> GetResponseAsync(IEnumerable<ChatMessage> messages, ChatOptions? options = null, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(IEnumerable<ChatMessage> messages, ChatOptions? options = null, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object? GetService(Type serviceType, object? serviceKey = null) => null;
+
+        public void Dispose() { }
+    }
+
+    private class MockServiceProvider : IServiceProvider
+    {
+        public object? GetService(Type serviceType) => null;
+    }
+}

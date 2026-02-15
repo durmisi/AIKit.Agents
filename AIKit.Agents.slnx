@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AIKit.Agents.Sample/AIKit.Agents.Sample.csproj" />
+    <Project Path="src/AIKit.Agents.Tests/AIKit.Agents.Tests.csproj" />
+    <Project Path="src/AIKit.Agents/AIKit.Agents.csproj" />
+  </Folder>
+</Solution>
