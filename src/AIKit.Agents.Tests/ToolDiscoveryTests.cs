@@ -36,18 +36,4 @@ public class ToolDiscoveryTests
     public static string SampleTool(string input) => $"Processed {input}";
 }
 
-public class AiKitAgentBuilderTests
-{
-    [Fact]
-    public void CreateChatAgent_ReturnsChatAgentBuilder()
-    {
-        // Act
-        var builder = AiKitAgentBuilder.CreateChatAgent();
-
-        // Assert
-        Assert.NotNull(builder);
-        Assert.IsType<ChatAgentBuilder>(builder);
-    }
-}
-
 

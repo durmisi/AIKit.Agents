@@ -32,7 +32,7 @@ public static class ChatUseCase
                 .WithDefaultAzureCredential()
                 .Build();
 
-            var agent = AiKitAgentBuilder.CreateChatAgent()
+            var agent = new ChatAgentBuilder()
                 .WithChatClient(chatClient)
                 .WithSystemMessage("""
                     You are a helpful AI assistant that can use various tools to help users.

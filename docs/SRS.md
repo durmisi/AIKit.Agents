@@ -52,13 +52,8 @@ Language: C# (.NET 10)
 - Minimal configuration layer
 
 4. Core Components
-   4.1 AiKitAgentBuilder (Entry Point)
-
-- MUST provide a static CreateChatAgent() method
-- MUST return corresponding builder classes
-
-  4.2 ChatAgentBuilder
-  Responsibilities:
+   4.1 ChatAgentBuilder
+   Responsibilities:
 
 - Configure LLM
 - Configure system message

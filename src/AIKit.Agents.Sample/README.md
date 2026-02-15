@@ -94,7 +94,7 @@ The sample uses the AIKit.Agents fluent builders:
 
 ```csharp
 // Chat Agent
-var agent = AiKitAgentBuilder.CreateChatAgent()
+var agent = new ChatAgentBuilder()
     .WithChatClient(chatClient)
     .WithSystemMessage("You are a helpful assistant.")
     .WithToolsFromAssembly(typeof(SampleTools).Assembly)
