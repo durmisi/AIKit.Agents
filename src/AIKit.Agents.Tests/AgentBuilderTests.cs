@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace AIKit.Agents.Tests;
 
-public class ChatAgentBuilderTests
+public class AgentBuilderTests
 {
     [Fact]
     public void WithChatClient_SetsChatClient()
@@ -14,7 +14,7 @@ public class ChatAgentBuilderTests
         var chatClient = new MockChatClient();
 
         // Act
-        var agent = new ChatAgentBuilder()
+        var agent = new AgentBuilder()
             .WithChatClient(chatClient)
             .Build();
 
@@ -29,7 +29,7 @@ public class ChatAgentBuilderTests
         var chatClient = new MockChatClient();
 
         // Act
-        var agent = new ChatAgentBuilder()
+        var agent = new AgentBuilder()
             .WithChatClient(chatClient)
             .WithSystemMessage("Test system message")
             .Build();
@@ -45,7 +45,7 @@ public class ChatAgentBuilderTests
         var chatClient = new MockChatClient();
 
         // Act
-        var agent = new ChatAgentBuilder()
+        var agent = new AgentBuilder()
             .WithChatClient(chatClient)
             .WithName("TestAgent")
             .Build();
@@ -61,7 +61,7 @@ public class ChatAgentBuilderTests
         var chatClient = new MockChatClient();
 
         // Act
-        var agent = new ChatAgentBuilder()
+        var agent = new AgentBuilder()
             .WithChatClient(chatClient)
             .WithDescription("Test description")
             .Build();
@@ -75,10 +75,10 @@ public class ChatAgentBuilderTests
     {
         // Arrange
         var chatClient = new MockChatClient();
-        var assembly = typeof(ChatAgentBuilderTests).Assembly;
+        var assembly = typeof(AgentBuilderTests).Assembly;
 
         // Act
-        var agent = new ChatAgentBuilder()
+        var agent = new AgentBuilder()
             .WithChatClient(chatClient)
             .WithToolsFromAssembly(assembly)
             .Build();
@@ -94,7 +94,7 @@ public class ChatAgentBuilderTests
         var chatClient = new MockChatClient();
 
         // Act
-        var agent = new ChatAgentBuilder()
+        var agent = new AgentBuilder()
             .WithChatClient(chatClient)
             .WithToolsFromCurrentAssembly()
             .Build();
@@ -111,7 +111,7 @@ public class ChatAgentBuilderTests
         var services = new MockServiceProvider();
 
         // Act
-        var agent = new ChatAgentBuilder()
+        var agent = new AgentBuilder()
             .WithChatClient(chatClient)
             .WithServiceProvider(services)
             .Build();
@@ -125,7 +125,7 @@ public class ChatAgentBuilderTests
     {
         // Act & Assert
         Assert.Throws<MissingModelException>(() =>
-            new ChatAgentBuilder()
+            new AgentBuilder()
                 .Build());
     }
 

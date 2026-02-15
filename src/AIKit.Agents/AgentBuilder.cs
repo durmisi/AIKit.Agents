@@ -7,7 +7,7 @@ namespace AIKit.Agents;
 /// <summary>
 /// Fluent builder for creating chat agents.
 /// </summary>
-public class ChatAgentBuilder
+public class AgentBuilder
 {
     private IChatClient? _chatClient;
     private string? _systemMessage;
@@ -21,7 +21,7 @@ public class ChatAgentBuilder
     /// </summary>
     /// <param name="chatClient">The chat client instance.</param>
     /// <returns>The builder instance.</returns>
-    public ChatAgentBuilder WithChatClient(IChatClient chatClient)
+    public AgentBuilder WithChatClient(IChatClient chatClient)
     {
         _chatClient = chatClient ?? throw new ArgumentNullException(nameof(chatClient));
         return this;
@@ -32,7 +32,7 @@ public class ChatAgentBuilder
     /// </summary>
     /// <param name="systemMessage">The system instructions.</param>
     /// <returns>The builder instance.</returns>
-    public ChatAgentBuilder WithSystemMessage(string systemMessage)
+    public AgentBuilder WithSystemMessage(string systemMessage)
     {
         _systemMessage = systemMessage ?? throw new ArgumentNullException(nameof(systemMessage));
         return this;
@@ -43,7 +43,7 @@ public class ChatAgentBuilder
     /// </summary>
     /// <param name="name">The agent name.</param>
     /// <returns>The builder instance.</returns>
-    public ChatAgentBuilder WithName(string name)
+    public AgentBuilder WithName(string name)
     {
         _name = name ?? throw new ArgumentNullException(nameof(name));
         return this;
@@ -54,7 +54,7 @@ public class ChatAgentBuilder
     /// </summary>
     /// <param name="description">The agent description.</param>
     /// <returns>The builder instance.</returns>
-    public ChatAgentBuilder WithDescription(string description)
+    public AgentBuilder WithDescription(string description)
     {
         _description = description ?? throw new ArgumentNullException(nameof(description));
         return this;
@@ -65,7 +65,7 @@ public class ChatAgentBuilder
     /// </summary>
     /// <param name="assemblies">The assemblies to scan.</param>
     /// <returns>The builder instance.</returns>
-    public ChatAgentBuilder WithToolsFromAssembly(params Assembly[] assemblies)
+    public AgentBuilder WithToolsFromAssembly(params Assembly[] assemblies)
     {
         _assemblies = assemblies ?? throw new ArgumentNullException(nameof(assemblies));
         return this;
@@ -75,7 +75,7 @@ public class ChatAgentBuilder
     /// Includes tools from the current assembly (entry or calling assembly).
     /// </summary>
     /// <returns>The builder instance.</returns>
-    public ChatAgentBuilder WithToolsFromCurrentAssembly()
+    public AgentBuilder WithToolsFromCurrentAssembly()
     {
         _assemblies = [Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()];
         return this;
@@ -86,7 +86,7 @@ public class ChatAgentBuilder
     /// </summary>
     /// <param name="serviceProvider">The service provider.</param>
     /// <returns>The builder instance.</returns>
-    public ChatAgentBuilder WithServiceProvider(IServiceProvider serviceProvider)
+    public AgentBuilder WithServiceProvider(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         return this;
@@ -105,7 +105,7 @@ public class ChatAgentBuilder
         return _chatClient.AsAIAgent(
             instructions: _systemMessage,
             name: _name ?? "ChatAgent",
-            description: _description ?? "Chat agent created with AIKit.Agents.ChatAgentBuilder",
+            description: _description ?? "Chat agent created with AIKit.Agents.AgentBuilder",
             tools: tools,
             loggerFactory: null,
             services: _serviceProvider);
