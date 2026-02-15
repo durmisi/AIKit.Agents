@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
 
 namespace AIKit.Agents;
 
@@ -15,6 +16,8 @@ public class AgentBuilder
     private string? _description;
     private Assembly[] _assemblies = [];
     private IServiceProvider? _serviceProvider;
+    private List<AITool> _addedTools = [];
+    private ILoggerFactory? _loggerFactory;
 
     /// <summary>
     /// Sets the chat client to use for the agent.
@@ -82,6 +85,17 @@ public class AgentBuilder
     }
 
     /// <summary>
+    /// Adds manual tools to the agent.
+    /// </summary>
+    /// <param name="tools">The tools to add.</param>
+    /// <returns>The builder instance.</returns>
+    public AgentBuilder WithTools(params AITool[] tools)
+    {
+        _addedTools.AddRange(tools ?? throw new ArgumentNullException(nameof(tools)));
+        return this;
+    }
+
+    /// <summary>
     /// Sets the service provider for dependency injection.
     /// </summary>
     /// <param name="serviceProvider">The service provider.</param>
@@ -93,6 +107,17 @@ public class AgentBuilder
     }
 
     /// <summary>
+    /// Sets the logger factory for logging.
+    /// </summary>
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <returns>The builder instance.</returns>
+    public AgentBuilder WithLoggerFactory(ILoggerFactory loggerFactory)
+    {
+        _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        return this;
+    }
+
+    /// <summary>
     /// Builds the chat agent.
     /// </summary>
     /// <returns>The MAF AIAgent instance.</returns>
@@ -100,14 +125,15 @@ public class AgentBuilder
     {
         if (_chatClient == null) throw new MissingModelException("ChatClient must be set.");
 
-        var tools = ToolDiscovery.DiscoverTools(_assemblies, _serviceProvider).ToList();
+        var discoveredTools = ToolDiscovery.DiscoverTools(_assemblies, _serviceProvider);
+        var allTools = discoveredTools.Concat(_addedTools).ToList();
 
         return _chatClient.AsAIAgent(
             instructions: _systemMessage,
             name: _name ?? "ChatAgent",
             description: _description ?? "Chat agent created with AIKit.Agents.AgentBuilder",
-            tools: tools,
-            loggerFactory: null,
+            tools: allTools,
+            loggerFactory: _loggerFactory,
             services: _serviceProvider);
     }
 }
