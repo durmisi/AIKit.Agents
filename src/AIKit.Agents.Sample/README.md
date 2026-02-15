@@ -101,7 +101,7 @@ var agent = AiKitAgentBuilder.CreateChatAgent()
     .Build();
 
 // Workflow Agent
-var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+var workflow = new WorkflowAgentBuilder()
     .WithName("DocumentProcessingWorkflow")
     .WithExecutor(validator)
     .WithExecutor(analyzer)

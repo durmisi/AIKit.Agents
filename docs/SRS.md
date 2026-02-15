@@ -55,7 +55,6 @@ Language: C# (.NET 10)
    4.1 AiKitAgentBuilder (Entry Point)
 
 - MUST provide a static CreateChatAgent() method
-- MUST provide a static CreateWorkflowAgent() method
 - MUST return corresponding builder classes
 
   4.2 ChatAgentBuilder

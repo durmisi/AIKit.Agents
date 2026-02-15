@@ -22,7 +22,7 @@ public static class WorkflowUseCase
             var summarizer = new DocumentProcessingWorkflow.SummaryGenerator();
 
             // Build the workflow
-            var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+            var workflow = new WorkflowAgentBuilder()
                 .WithName("DocumentProcessingWorkflow")
                 .WithDescription("A workflow that validates, analyzes, and summarizes documents")
                 .WithStartExecutor(validator)

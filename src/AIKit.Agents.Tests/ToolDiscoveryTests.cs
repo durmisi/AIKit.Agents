@@ -48,17 +48,6 @@ public class AiKitAgentBuilderTests
         Assert.NotNull(builder);
         Assert.IsType<ChatAgentBuilder>(builder);
     }
-
-    [Fact]
-    public void CreateWorkflowAgent_ReturnsWorkflowAgentBuilder()
-    {
-        // Act
-        var builder = AiKitAgentBuilder.CreateWorkflowAgent();
-
-        // Assert
-        Assert.NotNull(builder);
-        Assert.IsType<WorkflowAgentBuilder>(builder);
-    }
 }
 
 

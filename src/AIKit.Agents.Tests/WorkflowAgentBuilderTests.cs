@@ -15,7 +15,7 @@ public class WorkflowAgentBuilderTests
         // Arrange - Create a workflow with a single executor
         var executor = new OutputExecutor("Step1", "Step executed");
 
-        var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+        var workflow = new WorkflowAgentBuilder()
             .WithName("SimpleWorkflow")
             .WithExecutor(executor)
             .WithStartExecutor(executor)
@@ -38,7 +38,7 @@ public class WorkflowAgentBuilderTests
         var evenExecutor = new LoggingExecutor("Even", results, "Even path taken");
         var oddExecutor = new LoggingExecutor("Odd", results, "Odd path taken");
 
-        var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+        var workflow = new WorkflowAgentBuilder()
             .WithName("ConditionalWorkflow")
             .WithExecutor(startExecutor)
             .WithExecutor(evenExecutor)
@@ -72,7 +72,7 @@ public class WorkflowAgentBuilderTests
         var middleExecutor = new LoggingExecutor("Middle", results, "Middle executed");
         var defaultExecutor = new LoggingExecutor("Default", results, "Default should not execute");
 
-        var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+        var workflow = new WorkflowAgentBuilder()
             .WithName("StartExecutorWorkflow")
             .WithExecutor(defaultExecutor) // This would normally be start
             .WithExecutor(middleExecutor)
@@ -100,7 +100,7 @@ public class WorkflowAgentBuilderTests
         var nameExecutor = new OutputExecutor("Name", "World");
         var punctuationExecutor = new OutputExecutor("Punctuation", "!");
 
-        var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+        var workflow = new WorkflowAgentBuilder()
             .WithName("ResultBuildingWorkflow")
             .WithExecutor(greetingExecutor)
             .WithExecutor(nameExecutor)
@@ -125,7 +125,7 @@ public class WorkflowAgentBuilderTests
         var executor = new TestExecutor("Test");
         var description = "This is a test workflow description";
 
-        var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+        var workflow = new WorkflowAgentBuilder()
             .WithName("DescribedWorkflow")
             .WithDescription(description)
             .WithExecutor(executor)
@@ -143,7 +143,7 @@ public class WorkflowAgentBuilderTests
     {
         // Act & Assert
         Assert.Throws<InvalidOperationException>(() =>
-            AiKitAgentBuilder.CreateWorkflowAgent()
+            new WorkflowAgentBuilder()
                 .WithName("TestWorkflow")
                 .Build());
     }
@@ -155,7 +155,7 @@ public class WorkflowAgentBuilderTests
         var executor = new TestExecutor("Test");
 
         // Act
-        var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+        var workflow = new WorkflowAgentBuilder()
             .WithName("TestWorkflow")
             .WithExecutor(executor)
             .Build();
@@ -171,7 +171,7 @@ public class WorkflowAgentBuilderTests
         var executor = new TestExecutor("Test");
 
         // Act
-        var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+        var workflow = new WorkflowAgentBuilder()
             .WithName("TestWorkflow")
             .WithDescription("Test Description")
             .WithExecutor(executor)
@@ -188,7 +188,7 @@ public class WorkflowAgentBuilderTests
         var executor = new TestExecutor("Custom");
 
         // Act
-        var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+        var workflow = new WorkflowAgentBuilder()
             .WithName("TestWorkflow")
             .WithExecutor(executor)
             .Build();
@@ -205,7 +205,7 @@ public class WorkflowAgentBuilderTests
         var executor2 = new TestExecutor("Test2");
 
         // Act
-        var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+        var workflow = new WorkflowAgentBuilder()
             .WithName("TestWorkflow")
             .WithExecutor(executor1)
             .WithExecutor(executor2)
@@ -223,7 +223,7 @@ public class WorkflowAgentBuilderTests
         var startExecutor = new TestExecutor("Start");
 
         // Act
-        var workflow = AiKitAgentBuilder.CreateWorkflowAgent()
+        var workflow = new WorkflowAgentBuilder()
             .WithName("TestWorkflow")
             .WithStartExecutor(startExecutor)
             .Build();
