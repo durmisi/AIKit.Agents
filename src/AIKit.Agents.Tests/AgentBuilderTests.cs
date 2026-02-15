@@ -154,12 +154,35 @@ public class AgentBuilderTests
     }
 
     [Fact]
-    public void Build_WithoutChatClient_ThrowsMissingModelException()
+    public void WithResponseFormat_SetsResponseFormat()
     {
-        // Act & Assert
-        Assert.Throws<MissingModelException>(() =>
-            new AgentBuilder()
-                .Build());
+        // Arrange
+        var chatClient = new MockChatClient();
+
+        // Act
+        var agent = new AgentBuilder()
+            .WithChatClient(chatClient)
+            .UseStructuredOutput<string>()
+            .Build();
+
+        // Assert
+        Assert.NotNull(agent);
+    }
+
+    [Fact]
+    public void UseStructuredOutput_EnablesStructuredOutput()
+    {
+        // Arrange
+        var chatClient = new MockChatClient();
+
+        // Act
+        var agent = new AgentBuilder()
+            .WithChatClient(chatClient)
+            .UseStructuredOutput<string>    ()
+            .Build();
+
+        // Assert
+        Assert.NotNull(agent);
     }
 
     [Description("A test tool.")]

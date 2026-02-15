@@ -21,6 +21,8 @@ public class AgentBuilder
     private bool _enableOpenTelemetry = false;
     private string _openTelemetrySourceName = "AIKit.Agents";
     private bool _openTelemetryEnableSensitiveData = false;
+    private ChatResponseFormat _responseFormat = ChatResponseFormat.Text;
+    private List<Func<AIAgent, IServiceProvider?, AIAgent>> _middlewares = [];
 
     /// <summary>
     /// Sets the chat client to use for the agent.
@@ -134,6 +136,23 @@ public class AgentBuilder
         return this;
     }
 
+    public AgentBuilder UseStructuredOutput<T>() where T : class
+    {
+        _responseFormat = ChatResponseFormat.ForJsonSchema<T>();
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a middleware to the agent pipeline.
+    /// </summary>
+    /// <param name="middleware">The middleware function.</param>
+    /// <returns>The builder instance.</returns>
+    public AgentBuilder Use(Func<AIAgent, IServiceProvider?, AIAgent> middleware)
+    {
+        _middlewares.Add(middleware ?? throw new ArgumentNullException(nameof(middleware)));
+        return this;
+    }
+
     /// <summary>
     /// Builds the chat agent.
     /// </summary>
@@ -161,24 +180,48 @@ public class AgentBuilder
                 }).Build();
         }
 
-        var agent = chatClient.AsAIAgent(
-            instructions: _systemMessage,
-            name: _name ?? "ChatAgent",
-            description: _description ?? "Chat agent created with AIKit.Agents.AgentBuilder",
-            tools: allTools,
+        var chatOptions = new ChatOptions
+        {
+            Instructions = _systemMessage,
+            ResponseFormat = _responseFormat,
+            Tools = allTools
+        };
+
+        AIAgent agent = chatClient.AsAIAgent(
+            new ChatClientAgentOptions
+            {
+                Name = _name ?? "ChatAgent",
+                Description = _description ?? "Chat agent created with AIKit.Agents.AgentBuilder",
+                ChatOptions = chatOptions
+            },
             loggerFactory: _loggerFactory,
             services: _serviceProvider);
 
         // Apply OpenTelemetry
         if (_enableOpenTelemetry)
         {
-            agent = (ChatClientAgent)agent.AsBuilder()
+            agent = agent.AsBuilder()
             .UseOpenTelemetry(
                 sourceName: _openTelemetrySourceName,
                 configure: cfg =>
                 {
                     cfg.EnableSensitiveData = _openTelemetryEnableSensitiveData;
                 }).Build();
+        }
+
+        // Apply middlewares
+        foreach (var middleware in _middlewares)
+        {
+            agent = middleware(agent, _serviceProvider);
+        }
+
+        if(_responseFormat is ChatResponseFormatJson)
+        {
+            agent = new StructuredOutputAgent(agent, chatClient, new StructuredOutputAgentOptions
+            {
+                ChatClientSystemMessage = _systemMessage,
+                ChatOptions =chatOptions
+            });
         }
 
         return agent;

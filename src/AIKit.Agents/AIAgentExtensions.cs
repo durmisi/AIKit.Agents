@@ -59,4 +59,32 @@ public static class AIAgentExtensions
     {
         return agent.RunStreamingAsync(messages, session, options);
     }
+
+    /// <summary>
+    /// Runs the agent with structured output of the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type to deserialize the response to.</typeparam>
+    /// <param name="agent">The agent to run.</param>
+    /// <param name="input">The input string.</param>
+    /// <param name="session">The agent session for conversation continuity.</param>
+    /// <param name="options">The run options.</param>
+    /// <returns>The typed agent response.</returns>
+    public static Task<AgentResponse<T>> RunAsync<T>(this AIAgent agent, string input, AgentSession? session = null, AgentRunOptions? options = null)
+    {
+        return agent.RunAsync<T>(input, session, options);
+    }
+
+    /// <summary>
+    /// Runs the agent with structured output of the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type to deserialize the response to.</typeparam>
+    /// <param name="agent">The agent to run.</param>
+    /// <param name="messages">The input messages.</param>
+    /// <param name="session">The agent session for conversation continuity.</param>
+    /// <param name="options">The run options.</param>
+    /// <returns>The typed agent response.</returns>
+    public static Task<AgentResponse<T>> RunAsync<T>(this AIAgent agent, IEnumerable<ChatMessage> messages, AgentSession? session = null, AgentRunOptions? options = null)
+    {
+        return agent.RunAsync<T>(messages, session, options);
+    }
 }
