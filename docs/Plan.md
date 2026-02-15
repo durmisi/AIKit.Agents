@@ -38,9 +38,11 @@ This plan outlines the steps to enhance AIKit.Agents to fully align with Microso
    - Extend `AgentBuilder.cs` with continuation token logic for polling and stream resumption.
    - Add backoff handling for long-running tasks.
 
-6. **Incorporate Observability**
-   - Use `WithOpenTelemetry` on the `AIAgent` and `UseOpenTelemetry` on the `IChatClient` in `AgentBuilder.cs`.
-   - Configure exporters (e.g., Azure Monitor) via builder options.
+6. **Incorporate Observability** (Partially Implemented)
+   - ✅ Use `WithOpenTelemetry` on the `AIAgent` and `UseOpenTelemetry` on the `IChatClient` in `AgentBuilder.cs` (see [src/AIKit.Agents/AgentBuilder.cs](src/AIKit.Agents/AgentBuilder.cs)).
+   - Configure exporters (e.g., Azure Monitor) via builder options (pending implementation).
+   - Add workflow observability in `WorkflowAgentBuilder.cs` (pending).
+   - Integrate metrics, logs, and sensitive data handling per Microsoft Learn guidelines (https://learn.microsoft.com/en-us/agent-framework/agents/observability?pivots=programming-language-csharp).
 
 7. **Expand Tool Support**
    - Update `ToolDiscovery.cs` to detect and wrap tools with `ApprovalRequiredAIFunction`.
