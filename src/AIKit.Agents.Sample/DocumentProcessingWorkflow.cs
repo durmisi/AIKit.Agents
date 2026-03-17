@@ -17,33 +17,34 @@ public class DocumentProcessingWorkflow
         {
         }
 
-        protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
+        protected override ProtocolBuilder ConfigureProtocol(ProtocolBuilder protocolBuilder)
         {
-            routeBuilder.AddHandler<List<ChatMessage>>(async (messages, context) =>
+            return protocolBuilder.ConfigureRoutes(routeBuilder =>
             {
-                var input = messages.Last().Text;
-                Console.WriteLine($"[DocumentValidator] Validating input: {input}");
-
-                // Parse the document from the message
-                var doc = System.Text.Json.JsonSerializer.Deserialize<DocumentInput>(input.Replace("Process document: ", ""));
-
-                if (string.IsNullOrWhiteSpace(doc?.Content))
+                routeBuilder.AddHandler<List<ChatMessage>>(async (messages, context) =>
                 {
-                    await context.SendMessageAsync("Error: Document content cannot be empty");
-                    return;
-                }
+                    var input = messages.Last().Text;
+                    Console.WriteLine($"[DocumentValidator] Validating input: {input}");
 
-                if (doc.Content.Length > 10000)
-                {
-                    await context.SendMessageAsync("Error: Document content too large (max 10000 characters)");
-                    return;
-                }
+                    // Parse the document from the message
+                    var doc = System.Text.Json.JsonSerializer.Deserialize<DocumentInput>(input.Replace("Process document: ", ""));
 
-                Console.WriteLine($"[DocumentValidator] Document '{doc.Title}' validated successfully");
-                await context.YieldOutputAsync(doc);
+                    if (string.IsNullOrWhiteSpace(doc?.Content))
+                    {
+                        await context.SendMessageAsync("Error: Document content cannot be empty");
+                        return;
+                    }
+
+                    if (doc.Content.Length > 10000)
+                    {
+                        await context.SendMessageAsync("Error: Document content too large (max 10000 characters)");
+                        return;
+                    }
+
+                    Console.WriteLine($"[DocumentValidator] Document '{doc.Title}' validated successfully");
+                    await context.YieldOutputAsync(doc);
+                });
             });
-
-            return routeBuilder;
         }
     }
 
@@ -56,25 +57,26 @@ public class DocumentProcessingWorkflow
         {
         }
 
-        protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
+        protected override ProtocolBuilder ConfigureProtocol(ProtocolBuilder protocolBuilder)
         {
-            routeBuilder.AddHandler<DocumentInput>(async (input, context) =>
+            return protocolBuilder.ConfigureRoutes(routeBuilder =>
             {
-                Console.WriteLine($"[ContentAnalyzer] Analyzing content for: {input.Title}");
+                routeBuilder.AddHandler<DocumentInput>(async (input, context) =>
+                {
+                    Console.WriteLine($"[ContentAnalyzer] Analyzing content for: {input.Title}");
 
-                var analysis = new DocumentAnalysis(
-                    WordCount: input.Content.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length,
-                    CharacterCount: input.Content.Length,
-                    SentenceCount: input.Content.Split('.', StringSplitOptions.RemoveEmptyEntries).Length,
-                    HasCode: input.Content.Contains("```") || input.Content.Contains("function") || input.Content.Contains("class"),
-                    Sentiment: AnalyzeSentiment(input.Content)
-                );
+                    var analysis = new DocumentAnalysis(
+                        WordCount: input.Content.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length,
+                        CharacterCount: input.Content.Length,
+                        SentenceCount: input.Content.Split('.', StringSplitOptions.RemoveEmptyEntries).Length,
+                        HasCode: input.Content.Contains("```") || input.Content.Contains("function") || input.Content.Contains("class"),
+                        Sentiment: AnalyzeSentiment(input.Content)
+                    );
 
-                await context.YieldOutputAsync(analysis);
-                Console.WriteLine($"[ContentAnalyzer] Analysis complete: {analysis.WordCount} words, {analysis.SentenceCount} sentences");
+                    await context.YieldOutputAsync(analysis);
+                    Console.WriteLine($"[ContentAnalyzer] Analysis complete: {analysis.WordCount} words, {analysis.SentenceCount} sentences");
+                });
             });
-
-            return routeBuilder;
         }
 
         private string AnalyzeSentiment(string text)
@@ -101,27 +103,28 @@ public class DocumentProcessingWorkflow
         {
         }
 
-        protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
+        protected override ProtocolBuilder ConfigureProtocol(ProtocolBuilder protocolBuilder)
         {
-            routeBuilder.AddHandler<DocumentAnalysis>(async (analysis, context) =>
+            return protocolBuilder.ConfigureRoutes(routeBuilder =>
             {
-                Console.WriteLine($"[SummaryGenerator] Generating summary for analyzed document");
+                routeBuilder.AddHandler<DocumentAnalysis>(async (analysis, context) =>
+                {
+                    Console.WriteLine($"[SummaryGenerator] Generating summary for analyzed document");
 
-                var summary = new ProcessingResult(
-                    Analysis: analysis,
-                    Summary: $"Document contains {analysis.WordCount} words and {analysis.SentenceCount} sentences. " +
-                             $"Overall sentiment: {analysis.Sentiment}. " +
-                             $"Contains code: {analysis.HasCode}.",
-                    ProcessedAt: DateTime.UtcNow,
-                    Status: "Completed"
-                );
+                    var summary = new ProcessingResult(
+                        Analysis: analysis,
+                        Summary: $"Document contains {analysis.WordCount} words and {analysis.SentenceCount} sentences. " +
+                                 $"Overall sentiment: {analysis.Sentiment}. " +
+                                 $"Contains code: {analysis.HasCode}.",
+                        ProcessedAt: DateTime.UtcNow,
+                        Status: "Completed"
+                    );
 
-                // In a real application, this would save to database or file
-                Console.WriteLine($"[SummaryGenerator] Processing result: {summary.Summary}");
-                await context.SendMessageAsync(summary.Summary);
+                    // In a real application, this would save to database or file
+                    Console.WriteLine($"[SummaryGenerator] Processing result: {summary.Summary}");
+                    await context.SendMessageAsync(summary.Summary);
+                });
             });
-
-            return routeBuilder;
         }
     }
 

@@ -118,10 +118,13 @@ public class WorkflowAgentBuilder
         {
         }
 
-        protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
+
+        protected override ProtocolBuilder ConfigureProtocol(ProtocolBuilder protocolBuilder)
         {
-            routeBuilder.AddHandler<object>((input, context) => ValueTask.CompletedTask);
-            return routeBuilder;
+            return protocolBuilder.ConfigureRoutes(routeBuilder =>
+            {
+                routeBuilder.AddHandler<object>((input, context) => ValueTask.CompletedTask);
+            });
         }
     }
 }

@@ -18,7 +18,7 @@ public class WorkflowAgentBuilderTests
             .Build();
 
         // Act - Convert to agent and execute
-        var agent = workflow.AsAgent();
+        var agent = workflow.AsAIAgent();
         var response = await agent.RunAsync(new[] { new ChatMessage(ChatRole.User, "test input") });
 
         // Assert - Check that it executed without error
@@ -43,7 +43,7 @@ public class WorkflowAgentBuilderTests
             .AddEdge(startExecutor, oddExecutor, input => !IsEven((string)input!))
             .Build();
 
-        var agent = workflow.AsAgent();
+        var agent = workflow.AsAIAgent();
 
         // Act - Test even number
         var response = await agent.RunAsync(new[] { new ChatMessage(ChatRole.User, "4") });
@@ -77,7 +77,7 @@ public class WorkflowAgentBuilderTests
             .AddEdge(startExecutor, middleExecutor)
             .Build();
 
-        var agent = workflow.AsAgent();
+        var agent = workflow.AsAIAgent();
 
         // Act
         var response = await agent.RunAsync(new[] { new ChatMessage(ChatRole.User, "test") });
@@ -105,7 +105,7 @@ public class WorkflowAgentBuilderTests
             .AddEdge(nameExecutor, punctuationExecutor)
             .Build();
 
-        var agent = workflow.AsAgent();
+        var agent = workflow.AsAIAgent();
 
         // Act
         var response = await agent.RunAsync(new[] { new ChatMessage(ChatRole.User, "ignored") });
@@ -127,7 +127,7 @@ public class WorkflowAgentBuilderTests
             .WithExecutor(executor)
             .Build();
 
-        var agent = workflow.AsAgent();
+        var agent = workflow.AsAIAgent();
 
         // Assert
         Assert.True(true);
@@ -239,12 +239,14 @@ public class WorkflowAgentBuilderTests
     {
         public TestExecutor(string id = "Test") : base(id, null, false) { }
 
-        protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
+        protected override ProtocolBuilder ConfigureProtocol(ProtocolBuilder protocolBuilder)
         {
-            routeBuilder.AddHandler<object>((input, context) => ValueTask.CompletedTask);
-            routeBuilder.AddHandler<List<ChatMessage>>((messages, context) => ValueTask.CompletedTask);
-            routeBuilder.AddHandler<TurnToken>((token, context) => ValueTask.CompletedTask);
-            return routeBuilder;
+            return protocolBuilder.ConfigureRoutes(routeBuilder =>
+            {
+                routeBuilder.AddHandler<object>((input, context) => ValueTask.CompletedTask);
+                routeBuilder.AddHandler<List<ChatMessage>>((messages, context) => ValueTask.CompletedTask);
+                routeBuilder.AddHandler<TurnToken>((token, context) => ValueTask.CompletedTask);
+            });
         }
     }
 
@@ -259,20 +261,22 @@ public class WorkflowAgentBuilderTests
             _message = message;
         }
 
-        protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
+        protected override ProtocolBuilder ConfigureProtocol(ProtocolBuilder protocolBuilder)
         {
-            routeBuilder.AddHandler<object>(async (input, context) =>
+            return protocolBuilder.ConfigureRoutes(routeBuilder =>
             {
-                _results.Add(_message);
-                await context.SendMessageAsync(input);
+                routeBuilder.AddHandler<object>(async (input, context) =>
+                {
+                    _results.Add(_message);
+                    await context.SendMessageAsync(input);
+                });
+                routeBuilder.AddHandler<List<ChatMessage>>(async (messages, context) =>
+                {
+                    await context.SendMessageAsync(messages.Last().Text);
+                    _results.Add(_message);
+                });
+                routeBuilder.AddHandler<TurnToken>((token, context) => ValueTask.CompletedTask);
             });
-            routeBuilder.AddHandler<List<ChatMessage>>(async (messages, context) =>
-            {
-                await context.SendMessageAsync(messages.Last().Text);
-                _results.Add(_message);
-            });
-            routeBuilder.AddHandler<TurnToken>((token, context) => ValueTask.CompletedTask);
-            return routeBuilder;
         }
     }
 
@@ -285,21 +289,23 @@ public class WorkflowAgentBuilderTests
             _results = results;
         }
 
-        protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
+        protected override ProtocolBuilder ConfigureProtocol(ProtocolBuilder protocolBuilder)
         {
-            routeBuilder.AddHandler<object>(async (input, context) =>
+            return protocolBuilder.ConfigureRoutes(routeBuilder =>
             {
-                // This executor just passes through - routing is handled by edges
-                await context.SendMessageAsync(input);
+                routeBuilder.AddHandler<object>(async (input, context) =>
+                {
+                    // This executor just passes through - routing is handled by edges
+                    await context.SendMessageAsync(input);
+                });
+                routeBuilder.AddHandler<List<ChatMessage>>(async (messages, context) =>
+                {
+                    // This executor just passes through - routing is handled by edges
+                    var text = messages.Last().Text;
+                    await context.SendMessageAsync(text);
+                });
+                routeBuilder.AddHandler<TurnToken>((token, context) => ValueTask.CompletedTask);
             });
-            routeBuilder.AddHandler<List<ChatMessage>>(async (messages, context) =>
-            {
-                // This executor just passes through - routing is handled by edges
-                var text = messages.Last().Text;
-                await context.SendMessageAsync(text);
-            });
-            routeBuilder.AddHandler<TurnToken>((token, context) => ValueTask.CompletedTask);
-            return routeBuilder;
         }
     }
 
@@ -312,19 +318,21 @@ public class WorkflowAgentBuilderTests
             _output = output;
         }
 
-        protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
+        protected override ProtocolBuilder ConfigureProtocol(ProtocolBuilder protocolBuilder)
         {
-            routeBuilder.AddHandler<object>(async (input, context) =>
+            return protocolBuilder.ConfigureRoutes(routeBuilder =>
             {
-                await context.YieldOutputAsync(_output);
+                routeBuilder.AddHandler<object>(async (input, context) =>
+                {
+                    await context.YieldOutputAsync(_output);
+                });
+                routeBuilder.AddHandler<List<ChatMessage>>(async (messages, context) =>
+                {
+                    await context.SendMessageAsync(messages.Last().Text);
+                    await context.YieldOutputAsync(_output);
+                });
+                routeBuilder.AddHandler<TurnToken>((token, context) => ValueTask.CompletedTask);
             });
-            routeBuilder.AddHandler<List<ChatMessage>>(async (messages, context) =>
-            {
-                await context.SendMessageAsync(messages.Last().Text);
-                await context.YieldOutputAsync(_output);
-            });
-            routeBuilder.AddHandler<TurnToken>((token, context) => ValueTask.CompletedTask);
-            return routeBuilder;
         }
     }
 }

@@ -1,0 +1,50 @@
+# Publish NuGet package workflow for AIKit.Agents
+# Adapted from AIKit.Mcp
+
+name: Publish NuGet
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Extract version
+        id: version
+        run: |
+          TAG=${{ github.event.release.tag_name }}
+          VERSION=${TAG#v}  # Remove 'v' prefix (e.g., v1.0.0 -> 1.0.0)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Restore dependencies
+        run: dotnet restore AIKit.Agents.slnx
+
+      - name: Build
+        run: dotnet build AIKit.Agents.slnx --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test src/AIKit.Agents.Tests/AIKit.Agents.Tests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Pack NuGet packages
+        run: dotnet pack src/AIKit.Agents/AIKit.Agents.csproj --configuration Release --no-build --output ./nupkgs --version ${{ steps.version.outputs.version }}
+
+      - name: NuGet login (OIDC - temp API key)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: durmisi
+
+      - name: Publish to NuGet
+        run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
